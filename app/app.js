@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const createError = require("http-errors");
 
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -29,7 +30,8 @@ app.get("/test", (_, res) => {
 
 // client error handler
 app.use((_, res, next) => {
-  res.status(404).send({ message: "User not found" });
+  // res.status(404).send({ message: "User not found" });
+  createError(404, "Route not found");
   next();
 });
 
