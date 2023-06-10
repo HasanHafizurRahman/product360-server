@@ -10,3 +10,5 @@
 **How to secure API**
 **Environment variables and gitignore**
 **MVC Architecture**
+**Connect to database**
+**Create mongoose schema**

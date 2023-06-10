@@ -1,23 +1,62 @@
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    age: 28,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    age: 32,
-  },
-  {
-    id: 3,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    age: 45,
-  },
-  // Add more user objects as needed
-];
+const mongoose = require('mongoose');
+const bcrypt = require("bcryptjs");
+const { defaultImage } = require('../secret');
+const { Schema } = mongoose;
 
-module.exports = users;
+const emailValidator = (email) => {
+  // Regular expression for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const userSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 30,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: emailValidator,
+      message: "Invalid email address",
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: [6, "minlength must be at least 6 characters long"],
+    set: (v)=> bcrypt.hashSync(v, bcrypt.genSaltSync(10));
+  },
+  image: {
+    type: String,
+    default: defaultImage
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
+
+}, {timestamps: true});
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
